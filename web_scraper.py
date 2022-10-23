@@ -11,17 +11,14 @@ filmList_button = browser.find_element(by=By.PARTIAL_LINK_TEXT,
                                        value='Films & Tickets')
 filmList_button.click()
 # After clicking, wait 1 s (1000 ms) for the site to load
-# WebDriverWait(browser, 1000).until(expected_conditions.presence_of_element_located(by=By.CLASS_NAME, 
-#                                                                                   value='festival-schedule-films-list'))
-print('found')
-'''
+WebDriverWait(browser, 1000).until(expected_conditions.presence_of_element_located((By.CLASS_NAME, 
+                                                                                   'festival-schedule-films-list')))
 try:
     filmNames = browser.find_elements(by=By.XPATH, 
                                       value="//div[@class='festival-schedule-films-list-item']")
-    print(*fileNames)
+    print(len(fileNames))
 except :
     print('Unable to locate element')
-'''
 # browser.quit()
 
 # Check if file exists in directory 
