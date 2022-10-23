@@ -10,15 +10,17 @@ browser.get('https://windsorfilmfestival.com/')
 filmList_button = browser.find_element(by=By.PARTIAL_LINK_TEXT,
                                        value='Films & Tickets')
 filmList_button.click()
-# After clicking, wait 1 s (1000 ms) for the site to load
-WebDriverWait(browser, 1000).until(expected_conditions.presence_of_element_located((By.CLASS_NAME, 
-                                                                                   'festival-schedule-films-list')))
-try:
-    filmNames = browser.find_elements(by=By.XPATH, 
-                                      value="//div[@class='festival-schedule-films-list-item']")
-    print(len(fileNames))
-except :
-    print('Unable to locate element')
+# After clicking, wait 5 s (5000 ms) for the site to load
+# Locator accepts a tuple as an arguement
+filmData_list = WebDriverWait(browser, 5000).until(expected_conditions.presence_of_all_elements_located(locator=(By.XPATH, 
+                                                                                   "//div[@class='film-content']")))
+print(len(filmData_list))
+'''
+for filmData in filmData_list:
+    filmName = filmData.find_element(by=By.XPATH,
+                                     value=".//div[@class='film-content']")
+    print(filmName.text)
+'''
 # browser.quit()
 
 # Check if file exists in directory 
