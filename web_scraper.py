@@ -1,4 +1,3 @@
-import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -19,11 +18,4 @@ for filmData in filmData_list:
                                      value="./h3") # . Means to search 
                                                    # the child of the current node
     print(filmName.text)
-# browser.quit()
-
-# Check if file exists in directory 
-wiffSite_filename = 'wiffSite_data.txt'
-fileExists_flag = os.path.exists(wiffSite_filename)
-
-if fileExists_flag:
-    pass 
+browser.quit()
