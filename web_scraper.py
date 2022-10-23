@@ -14,13 +14,11 @@ filmList_button.click()
 # Locator accepts a tuple as an arguement
 filmData_list = WebDriverWait(browser, 5000).until(expected_conditions.presence_of_all_elements_located(locator=(By.XPATH, 
                                                                                    "//div[@class='film-content']")))
-print(len(filmData_list))
-'''
 for filmData in filmData_list:
     filmName = filmData.find_element(by=By.XPATH,
-                                     value=".//div[@class='film-content']")
+                                     value="./h3") # . Means to search 
+                                                   # the child of the current node
     print(filmName.text)
-'''
 # browser.quit()
 
 # Check if file exists in directory 
