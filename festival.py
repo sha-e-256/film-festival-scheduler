@@ -1,5 +1,5 @@
 import time
-from datetime import date
+from datetime import date, datetime
 import typing
 
 
@@ -18,8 +18,8 @@ class Screening:
     screening_locaton: str
         The location of the screening.
     '''
-    def __init__(self, screening_time_start: time,
-                 screening_time_end: time,
+    def __init__(self, screening_time_start: datetime,
+                 screening_time_end: datetime,
                  screening_date: date,
                  screening_location: str) -> None:
         '''
@@ -27,9 +27,9 @@ class Screening:
 
         Parameters:
         ----------
-        screening_time_start: time
+        screening_time_start: datetime
             The time the screening starts.
-        screening_time_end: time
+        screening_time_end: datetime
             The time the screening ends.
         film_date: date
             The date of the screening.
@@ -41,6 +41,14 @@ class Screening:
         self.screening_date = screening_date
         self.screening_location = screening_location
 
+    def __str__(self):
+        text = f''' 
+            Start Time: {self.screening_time_start.time()}
+            End Time: {self.screening_time_end.time()}
+            Date: {self.screening_date}
+            Location: {self.screening_location}
+        '''
+        return text
 
 class Film:
     '''
@@ -71,3 +79,13 @@ class Film:
         '''
         self.film_name = film_name
         self.film_screenings = film_screenings
+
+    def __str__(self):
+        text = f'''
+        Film Name: {self.film_name}
+        List of Screenings:
+        '''
+
+        for screening in self.film_screenings:
+            text += screening.__str__()
+        return(text)
