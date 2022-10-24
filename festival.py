@@ -9,14 +9,14 @@ class Screening:
 
     Attributes:
     -----------
-    film_time: str
+    film_time: time
         The time of the screening.
     film_date: date
         The date of the screening.
     film_locaton: str
         The location of the screening.
     '''
-    def __init__(self, screening_time: str,
+    def __init__(self, screening_time: time,
                  screening_date: date,
                  screening_location: str) -> None:
         '''
@@ -24,7 +24,7 @@ class Screening:
 
         Parameters:
         ----------
-        film_time: str
+        film_time: time
             The time of the screening.
         film_date: date
             The date of the screening.
