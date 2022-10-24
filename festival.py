@@ -9,14 +9,17 @@ class Screening:
 
     Attributes:
     -----------
-    film_time: time
-        The time of the screening.
-    film_date: date
+    screening_time_start: time
+        The time the screening starts.
+    screening_time_end: time
+        The time the screening ends.
+    screening_date: date
         The date of the screening.
-    film_locaton: str
+    screening_locaton: str
         The location of the screening.
     '''
-    def __init__(self, screening_time: time,
+    def __init__(self, screening_time_start: time,
+                 screening_time_end: time,
                  screening_date: date,
                  screening_location: str) -> None:
         '''
@@ -24,15 +27,18 @@ class Screening:
 
         Parameters:
         ----------
-        film_time: time
-            The time of the screening.
+        screening_time_start: time
+            The time the screening starts.
+        screening_time_end: time
+            The time the screening ends.
         film_date: date
             The date of the screening.
         film_locaton: str
             The location of the screening.
         '''
-        self.screening_time = screening_time
-        self.screnning_date = screening_date
+        self.screening_time_start = screening_time_start
+        self.screening_time_end = screening_time_end
+        self.screening_date = screening_date
         self.screening_location = screening_location
 
 
@@ -48,12 +54,9 @@ class Film:
         A list of the available screenings where each
         Screening object in the list contains information on the screening such
         as the time, date, and location.
-    film_length: int
-        The length of a film in minutes.
     '''
     def __init__(self, film_name: str,
-                 film_screenings: [Screening],
-                 film_length: int) -> None:
+                 film_screenings: [Screening]) -> None:
         '''
         The constructor for the Film class
 
@@ -65,8 +68,6 @@ class Film:
             A list of the available screenings where each
             Screening object in the list contains information on the screening
             such as the time, date, and location.
-        film_length: int
         '''
         self.film_name = film_name
         self.film_screenings = film_screenings
-        self.film_length = film_length
