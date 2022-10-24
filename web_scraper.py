@@ -24,7 +24,6 @@ def main() -> int:
         film_name = film_data.find_element(by=By.XPATH,
                                          value="./h3")  # . Means to search
                                                         # the child of the current node
-        
         film_screening_list = film_data.find_elements(by=By.XPATH,
                                                       value=".//div[@class='film-screen']")
         for film_screening in film_screening_list:
@@ -36,7 +35,6 @@ def main() -> int:
             film_date = datetime.strptime(film_date_str, '%a %b %d').date()
             film_date_correct_year = film_date.replace(2022)
             film_location = film_screen_str_list[2]
-            print(type(film_time))
             film_length = 120  # Filler for now
         # curr_film = Film(film_name=film_name.text, )
         # film_list.append(curr_film)
