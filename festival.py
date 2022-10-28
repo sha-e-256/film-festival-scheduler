@@ -42,12 +42,12 @@ class Screening:
         self.screening_location = screening_location
 
     def __str__(self):
-        text = f''' 
-            Start Time: {self.screening_time_start.time()}
-            End Time: {self.screening_time_end.time()}
-            Date: {self.screening_date}
-            Location: {self.screening_location}
-        '''
+        text = f'''\
+    *Start Time: {self.screening_time_start.time()}
+    End Time: {self.screening_time_end.time()}
+    Date: {self.screening_date}
+    Location: {self.screening_location}\
+    '''
         return text
 
 class Film:
@@ -81,11 +81,7 @@ class Film:
         self.film_screenings = film_screenings
 
     def __str__(self):
-        text = f'''
-        Film Name: {self.film_name}
-        List of Screenings:
-        '''
-
-        for screening in self.film_screenings:
-            text += screening.__str__()
-        return(text)
+        text = f'\nFilm Name: {self.film_name}\nList of Screenings:\n'
+        # List comprehension using a string
+        text = text.join(screening.__str__() for screening in self.film_screenings)
+        return text
