@@ -9,6 +9,24 @@ import pickle
 import os
 from collections import defaultdict
 
+def get_user_input(film_list):
+    films_to_watch = defaultdict(set)
+    key = 0
+    while True:
+        # Don't assume the user will always enter a number... add try/except
+        film_to_watch_index = int(input('Enter a number 1 to 182: '))
+        if film_to_watch_index in range(1, 183):
+            films_to_watch[key] = film_list[film_to_watch_index - 1]
+            key += 1
+            print(f'Added film {film_list[film_to_watch_index - 1].film_name} to watch list.')
+        else:
+            break
+    return films_to_watch
+
+def print_film_names(film_list):
+    for index, film in enumerate(film_list):
+        print(f'[{index+1:03d}]: {film.film_name}')  # 03d: 3 digits pad with zeros
+
 def save_film_list(film_list, dst_file_name) -> None:
 
     with open(file=dst_file_name, mode="wb") as file:
@@ -94,8 +112,8 @@ def main() -> None:
     else:
         film_list = load_film_list(src_file_name=file_name)
     
-    for film_object in film_list:
-        print(film_object)
 
+    print_film_names(film_list=film_list)
+    films_to_watch = get_user_input(film_list=film_list)
 if __name__ == '__main__':
     main()
