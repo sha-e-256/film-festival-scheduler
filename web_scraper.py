@@ -9,7 +9,7 @@ import pickle
 import os
 from collections import defaultdict
 
-def get_user_input(film_list):
+def get_user_input(film_list: list[Film]) -> defaultdict:
     films_to_watch = defaultdict(set)
     key = 0
     while True:
@@ -17,7 +17,7 @@ def get_user_input(film_list):
             film_to_watch_index = int(input('Enter a number 1 to 182 (Enter -1 to exit): '))
             if film_to_watch_index in range(1, 183):
                 films_to_watch[key] = film_list[film_to_watch_index - 1]
-                key += 1 
+                key += 1
                 print(f'Added film {film_list[film_to_watch_index - 1].film_name} to watch list.')
             elif film_to_watch_index == -1:
                 break
@@ -28,24 +28,24 @@ def get_user_input(film_list):
 
     return films_to_watch
 
-def print_film_names(film_list):
+def print_film_names(film_list: list[Film]) -> None:
     for index, film in enumerate(film_list):
         print(f'[{index+1:03d}]: {film.film_name}')  # 03d: 3 digits pad with zeros
 
-def save_film_list(film_list, dst_file_name) -> None:
+def save_film_list(film_list: list[Film], dst_file_name: str) -> None:
 
     with open(file=dst_file_name, mode="wb") as file:
         pickle.dump(obj=film_list, file=file)
         file.close()
 
-def load_film_list(src_file_name):
+def load_film_list(src_file_name: str) -> list[Film]:
 
     with open(file=src_file_name, mode="rb") as file:
         film_list = pickle.load(file=file)
     file.close()
     return film_list
 
-def generate_film_list(file_name):
+def generate_film_list(file_name: str) -> list[Film]:
     film_list = defaultdict(set)  # Create a list of Film objects
     screening_list = defaultdict(set)  # Create a list of Screening objects
     browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
@@ -66,22 +66,16 @@ def generate_film_list(file_name):
         film_screening_list = film_data.find_elements(by=By.XPATH,
                                                     value=".//div[@class='film-screen']")
         for key_film_screening, film_screening in enumerate(film_screening_list):
-            
             film_screening_str = film_screening.text
             film_screen_str_list = film_screening_str.split('\n')
-
             film_start_time_str = film_screen_str_list[-1]
             film_start_time = datetime.strptime(film_start_time_str, '%I:%M %p')
-            
-            
             film_length = 99  # Filler for now
             film_end_time = film_start_time + timedelta(minutes=film_length)
-            
             film_date_str = film_screen_str_list[0]
-            film_date = datetime.strptime(film_date_str, 
+            film_date = datetime.strptime(film_date_str,
                                         '%a %b %d').date()  # Year defaults to 1899
             film_date_correct_year = film_date.replace(2021)  # Change year to 2022
-            
             film_location = film_screen_str_list[1]
 
             # Make a Screening object
@@ -94,8 +88,7 @@ def generate_film_list(file_name):
         # Make a Film object
         curr_film = Film(film_name=film_name, film_screenings=screening_list)
         film_list[key_film_name] = curr_film
-        screening_list.clear()  # Empty the list of screenings 
-        
+        screening_list.clear()  # Empty the list of screenings
         '''
         moreInfo_button = filmData.find_element(by=By.PARTIAL_LINK_TEXT,
                                                 value='MORE INFO')
@@ -108,7 +101,7 @@ def generate_film_list(file_name):
     browser.quit()
     return film_list
 
-def main() -> None:  
+def main() -> None:
     file_name = 'film_objects.dat'
     film_list_file_exists = os.path.exists(file_name)
     if not film_list_file_exists:
@@ -116,8 +109,6 @@ def main() -> None:
         save_film_list(film_list=film_list, dst_file_name=file_name)
     else:
         film_list = load_film_list(src_file_name=file_name)
-    
-
     print_film_names(film_list=film_list)
     films_to_watch = get_user_input(film_list=film_list)
 if __name__ == '__main__':
