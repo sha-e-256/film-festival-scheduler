@@ -13,14 +13,19 @@ def get_user_input(film_list):
     films_to_watch = defaultdict(set)
     key = 0
     while True:
-        # Don't assume the user will always enter a number... add try/except
-        film_to_watch_index = int(input('Enter a number 1 to 182: '))
-        if film_to_watch_index in range(1, 183):
-            films_to_watch[key] = film_list[film_to_watch_index - 1]
-            key += 1
-            print(f'Added film {film_list[film_to_watch_index - 1].film_name} to watch list.')
-        else:
-            break
+        try:
+            film_to_watch_index = int(input('Enter a number 1 to 182 (Enter -1 to exit): '))
+            if film_to_watch_index in range(1, 183):
+                films_to_watch[key] = film_list[film_to_watch_index - 1]
+                key += 1 
+                print(f'Added film {film_list[film_to_watch_index - 1].film_name} to watch list.')
+            elif film_to_watch_index == -1:
+                break
+            else:
+                print('Invalid input. Please try again.')
+        except ValueError:
+            print('Invalid input. Please try again')
+
     return films_to_watch
 
 def print_film_names(film_list):
