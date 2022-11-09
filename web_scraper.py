@@ -11,15 +11,13 @@ from collections import defaultdict
 
 def get_user_input(film_list: list[Film]) -> defaultdict:
     films_to_watch = defaultdict(set)
-    key = 0
     while True:
         try:
             film_to_watch_index = int(input('Enter a number 1 to 182 (Enter -1 to exit): '))
             if film_to_watch_index in range(1, 183):
-                films_to_watch[key] = film_list[film_to_watch_index - 1]
+                films_to_watch[film_to_watch_index - 1] = film_list[film_to_watch_index - 1]
                 # If user adds a duplicate option; it does not add a duplicate
                 # film to the list because a dict is used
-                key += 1
                 print(f'Added film {film_list[film_to_watch_index - 1].film_name} to watchlist.')
             elif film_to_watch_index == -1:
                 break
@@ -97,7 +95,7 @@ def generate_film_list(file_name: str) -> list[Film]:
         moreInfo_button = filmData.find_element(by=By.PARTIAL_LINK_TEXT,
                                                 value='MORE INFO')
         moreInfo_button.click()
-        film_extras = WebDriverWait(browser, 4999).until(expected_conditions.presence_of_all_elements_located(locator=(By.XPATH,
+        film_extras = WebDriverWait(browser, 4999).until(ec.presence_of_all_elements_located(locator=(By.XPATH,
                                                                                                             "//div[@class='film-extras']")))
         film_extras_str = film_extras[-1].text
         film_length = film_extras_str.split('\n')[-2]
@@ -106,9 +104,8 @@ def generate_film_list(file_name: str) -> list[Film]:
     return film_list
 
 def print_film_list(film_dict: defaultdict(set)) -> None:
-    # Print all the values that yield from the generator 
-    [print(film.film_name) for film in film_dict.values()]  #  Print the names of the films in the dict
-
+    # Print all the values that yield from the generator
+    [print(film.film_name) for film in film_dict.values()]
 
 def main() -> None:
     file_name = 'film_objects.dat'
@@ -121,5 +118,6 @@ def main() -> None:
     print_film_names(film_list=film_list)
     films_to_watch = get_user_input(film_list=film_list)
     print_film_list(film_dict=films_to_watch)
+
 if __name__ == '__main__':
     main()
