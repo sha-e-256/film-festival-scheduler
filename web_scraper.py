@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support import expected_conditions as ec
 from webdriver_manager.firefox import GeckoDriverManager
 from festival import Film, Screening
 from datetime import date, datetime, time, timedelta
@@ -17,8 +17,10 @@ def get_user_input(film_list: list[Film]) -> defaultdict:
             film_to_watch_index = int(input('Enter a number 1 to 182 (Enter -1 to exit): '))
             if film_to_watch_index in range(1, 183):
                 films_to_watch[key] = film_list[film_to_watch_index - 1]
+                # If user adds a duplicate option; it does not add a duplicate
+                # film to the list because a dict is used
                 key += 1
-                print(f'Added film {film_list[film_to_watch_index - 1].film_name} to watch list.')
+                print(f'Added film {film_list[film_to_watch_index - 1].film_name} to watchlist.')
             elif film_to_watch_index == -1:
                 break
             else:
@@ -30,7 +32,8 @@ def get_user_input(film_list: list[Film]) -> defaultdict:
 
 def print_film_names(film_list: list[Film]) -> None:
     for index, film in enumerate(film_list):
-        print(f'[{index+1:03d}]: {film.film_name}')  # 03d: 3 digits pad with zeros
+        print(f'[{index+1:03d}]: {film.film_name}')
+        # 03d: 3 digits pad with zeros
 
 def save_film_list(film_list: list[Film], dst_file_name: str) -> None:
 
@@ -56,8 +59,9 @@ def generate_film_list(file_name: str) -> list[Film]:
 
     # After clicking, wait 1 s (5000 ms) for the site to load
     # Locator accepts a tuple as an arguement
-    film_data_list = WebDriverWait(browser, 1999).until(expected_conditions.presence_of_all_elements_located(locator=(By.XPATH,
-                                                                                                                "//div[@class='film-content']")))
+    film_data_list = WebDriverWait(browser,
+                                   1999).until(ec.presence_of_all_elements_located(locator=(By.XPATH,
+                                                                                            "//div[@class='film-content']")))
     for key_film_name, film_data in enumerate(film_data_list):
         film_name_element = film_data.find_element(by=By.XPATH,
                                         value="./h2")  # . Means to search
@@ -101,6 +105,11 @@ def generate_film_list(file_name: str) -> list[Film]:
     browser.quit()
     return film_list
 
+def print_film_list(film_dict: defaultdict(set)) -> None:
+    # Print all the values that yield from the generator 
+    [print(film.film_name) for film in film_dict.values()]  #  Print the names of the films in the dict
+
+
 def main() -> None:
     file_name = 'film_objects.dat'
     film_list_file_exists = os.path.exists(file_name)
@@ -111,5 +120,6 @@ def main() -> None:
         film_list = load_film_list(src_file_name=file_name)
     print_film_names(film_list=film_list)
     films_to_watch = get_user_input(film_list=film_list)
+    print_film_list(film_dict=films_to_watch)
 if __name__ == '__main__':
     main()
