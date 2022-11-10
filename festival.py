@@ -42,6 +42,10 @@ class Screening:
         self.screening_location = screening_location
 
     def __str__(self):
+        '''
+        Creates a well-formatted string that displays the information
+        on a screening
+        '''
         text = f'''\
     *Start Time: {self.screening_time_start.time()}
     End Time: {self.screening_time_end.time()}
@@ -81,6 +85,10 @@ class Film:
         self.film_screenings = film_screenings
 
     def __str__(self):
+        '''
+        Creates a well-formatted string that displays the information on
+        a film.
+        '''
         text = f'\nFilm Name: {self.film_name}\nList of Screenings:\n'
         # List comprehension using a string
         text = text.join(screening.__str__() for screening in self.film_screenings)
