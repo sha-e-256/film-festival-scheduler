@@ -171,11 +171,12 @@ def get_optimal_watchlist(sorted_unique_film_tuples: List[List[tuple[str, Screen
         # The second element in the tuple is the Screening object
         prev_end = combination[0][1].screening_time_end
         # Compare current tuple against the rest of the tuples
-        for film_tuple in combination[1:]:
+        for i, film_tuple in enumerate(combination[1:]):
             start_time, end_time = (film_tuple[1].screening_time_start,
                                    film_tuple[1].screening_time_end)
             # Check if the next film starts after the first film
-            if start_time >= prev_end:
+            # If the movies are on different dates; they definitely do not overlap
+            if start_time >= prev_end or film_tuple[1].screening_date != combination[i][1].screening_date:
                 prev_end = end_time  # No overlap; check the next film
             # The next film DOES start after the first film; i. e. overlap detected
             else:
