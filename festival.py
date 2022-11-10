@@ -52,7 +52,7 @@ class Screening:
 
 class Film:
     '''
-    This called stores information on a film.
+    This class stores information on a film.
 
     Attributes:
     -----------
