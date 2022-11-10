@@ -107,30 +107,45 @@ def generate_film_list(file_name: str) -> list[Film]:
 
 def print_film_list(film_dict: defaultdict(set)) -> None:
     # Print all the values that yield from the generator
-    print('Watchlist:')
+    print('\n--Watchlist:--\n')
     [print(film.film_name) for film in film_dict.values()]
 
-def convert_film_dict_2_tuples(films_dict: defaultdict(set)) -> List[List[tuple[str, Screening]]]:
+def convert_film_dict_2_tuples(films_dict: defaultdict(set)) \
+    -> List[List[tuple[str, Screening]]]:
     '''
-    Convert the dict into a list of tuples such that each tuple contains 
-    the name of the film, and the Screening object; this is done so that the 
-    name of the film that a Screening belongs to is preserved after the 
+    Convert the dict into a list of tuples such that each tuple contains
+    the name of the film, and the Screening object; this is done so that the
+    name of the film that a Screening belongs to is preserved after the
     cartesian product is generated.
     '''
     films_tuples = []
     # Each tuple contains the film name and one screening
     for film in films_dict.values():
-        film_screenings_tuples = [(film.film_name, film_screening) for film_screening in film.film_screenings]
+        film_screenings_tuples = [(film.film_name, film_screening) \
+                                  for film_screening in film.film_screenings]
         films_tuples.append(film_screenings_tuples)
     return films_tuples
 
-def create_unique_film_list(films_tuples: List[List[tuple[str, Screening]]]) -> List[List[tuple[str, Screening]]]:
+def create_unique_film_list(films_tuples: List[List[tuple[str, Screening]]]) \
+    -> List[List[tuple[str, Screening]]]:
     '''
     Return the set of all ordered tuples such that each set only contains
     one screening for each movie.
     '''
     unique_films_tuples = list(itertools.product(*films_tuples))
+
     return unique_films_tuples
+
+def print_unique_films_tuples(unique_films_tuples: \
+                              List[List[tuple[str, Screening]]]) -> None:
+    print('\n--Watchlist with One Screening per Film:--\n')
+    for i, unique_film in enumerate(unique_films_tuples):
+        print(f'--Combination {i + 1}--\n')
+        for combo in unique_film:
+            print(f'''\
+Film Name: {combo[0]}
+Film Screening: {combo[1].__str__()}
+            ''')
 
 def main() -> None:
     file_name = 'film_objects.dat'
@@ -147,6 +162,7 @@ def main() -> None:
     print_film_list(film_dict=films_to_watch)
     films_tuples = convert_film_dict_2_tuples(films_dict=films_to_watch)
     unique_films_tuples = create_unique_film_list(films_tuples=films_tuples)
+    # print_unique_films_tuples(unique_films_tuples=unique_films_tuples)
 
 if __name__ == '__main__':
     main()
