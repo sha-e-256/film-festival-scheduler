@@ -127,25 +127,40 @@ def convert_film_dict_2_tuples(films_dict: defaultdict(set)) \
     return films_tuples
 
 def create_unique_film_list(films_tuples: List[List[tuple[str, Screening]]]) \
-    -> List[List[tuple[str, Screening]]]:
+    -> List[tuple[tuple[str, Screening]]]:
     '''
     Return the set of all ordered tuples such that each set only contains
     one screening for each movie.
     '''
+    # This method a list of tuples of tuples; not a list of lists ruples
     unique_films_tuples = list(itertools.product(*films_tuples))
-
     return unique_films_tuples
 
 def print_unique_films_tuples(unique_films_tuples: \
-                              List[List[tuple[str, Screening]]]) -> None:
+    List[list[tuple[str, Screening]]]) -> None:
     print('\n--Watchlist with One Screening per Film:--\n')
-    for i, unique_film in enumerate(unique_films_tuples):
+    for i, combination in enumerate(unique_films_tuples):
         print(f'--Combination {i + 1}--\n')
-        for combo in unique_film:
+        for film in combination:
             print(f'''\
-Film Name: {combo[0]}
-Film Screening: {combo[1].__str__()}
+Film Name: {film[0]}
+Film Screening: {film[1].__str__()}
             ''')
+
+def sort_combination_by_start_time(unique_films_tuples: \
+    List[tuple[tuple[str, Screening]]]) -> List[List[tuple[str, Screening]]]:
+    '''
+    Return all combinations of films with non-overlapping intervals
+    '''
+    nonoverlapping_intervals = []
+    sorted_unique_film_tuples = []
+    for combination in unique_films_tuples:
+        combination_list = list(combination)
+        # Sort each combination based off of the screening's start time
+        combination_list.sort(key=lambda x: x[1].screening_time_start)
+        sorted_unique_film_tuples.append(combination_list)
+        print_unique_films_tuples(unique_films_tuples=sorted_unique_film_tuples)
+
 
 def main() -> None:
     file_name = 'film_objects.dat'
@@ -163,6 +178,7 @@ def main() -> None:
     films_tuples = convert_film_dict_2_tuples(films_dict=films_to_watch)
     unique_films_tuples = create_unique_film_list(films_tuples=films_tuples)
     # print_unique_films_tuples(unique_films_tuples=unique_films_tuples)
+    sort_combination_by_start_time(unique_films_tuples=unique_films_tuples)
 
 if __name__ == '__main__':
     main()
