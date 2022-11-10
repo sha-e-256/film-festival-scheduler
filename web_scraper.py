@@ -138,7 +138,7 @@ def create_unique_film_list(films_tuples: List[List[tuple[str, Screening]]]) \
 
 def print_unique_films_tuples(unique_films_tuples: \
     List[list[tuple[str, Screening]]]) -> None:
-    print('\n--Watchlist with One Screening per Film:--\n')
+    print('\n--Watchlist with Optimal Viewing Schedule:--\n')
     for i, combination in enumerate(unique_films_tuples):
         print(f'--Combination {i + 1}--\n')
         for film in combination:
@@ -150,16 +150,42 @@ Film Screening: {film[1].__str__()}
 def sort_combination_by_start_time(unique_films_tuples: \
     List[tuple[tuple[str, Screening]]]) -> List[List[tuple[str, Screening]]]:
     '''
-    Return all combinations of films with non-overlapping intervals
+    Sort the combination of films in the list of film tuples by the 
+    start time of the screenings. 
     '''
-    nonoverlapping_intervals = []
     sorted_unique_film_tuples = []
     for combination in unique_films_tuples:
         combination_list = list(combination)
         # Sort each combination based off of the screening's start time
         combination_list.sort(key=lambda x: x[1].screening_time_start)
         sorted_unique_film_tuples.append(combination_list)
-        print_unique_films_tuples(unique_films_tuples=sorted_unique_film_tuples)
+    return sorted_unique_film_tuples
+
+def get_optimal_watchlist(sorted_unique_film_tuples: List[List[tuple[str, Screening]]]) \
+    -> List[List[tuple[str, Screening]]]:
+    '''
+    Return all combinations of films with non-overlapping intervals
+    '''
+    for combination in sorted_unique_film_tuples:
+        # Start at the first tuple in the combination list
+        # The second element in the tuple is the Screening object
+        prev_end = combination[0][1].screening_time_end
+        # Compare current tuple against the rest of the tuples
+        for film_tuple in combination[1:]:
+            start_time, end_time = (film_tuple[1].screening_time_start,
+                                   film_tuple[1].screening_time_end)
+            # Check if the next film starts after the first film
+            if start_time >= prev_end:
+                prev_end = end_time  # No overlap; check the next film
+            # The next film DOES start after the first film; i. e. overlap detected
+            else:
+                combination.remove(film_tuple)  # This movie is causing an overlap
+                prev_end = min(end_time, prev_end)  # Remove the screening that ends later
+    
+    max_len = len(max(sorted_unique_film_tuples, key=len))  # Length of longest combination
+    
+    optimal_watchlist = [combination for combination in sorted_unique_film_tuples if len(combination) == max_len]
+    return optimal_watchlist
 
 
 def main() -> None:
@@ -178,7 +204,9 @@ def main() -> None:
     films_tuples = convert_film_dict_2_tuples(films_dict=films_to_watch)
     unique_films_tuples = create_unique_film_list(films_tuples=films_tuples)
     # print_unique_films_tuples(unique_films_tuples=unique_films_tuples)
-    sort_combination_by_start_time(unique_films_tuples=unique_films_tuples)
+    sorted_unique_film_tuples = sort_combination_by_start_time(unique_films_tuples=unique_films_tuples)
+    nonoverlapping_screenings = get_optimal_watchlist(sorted_unique_film_tuples)
+    print_unique_films_tuples(nonoverlapping_screenings)
 
 if __name__ == '__main__':
     main()
