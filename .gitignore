@@ -1,5 +1,4 @@
 geckodriver
 geckodriver.log
-.env
 .vscode/
 __pycache__/
