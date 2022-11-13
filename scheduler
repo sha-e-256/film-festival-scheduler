@@ -11,7 +11,7 @@ import pickle
 import os
 from collections import defaultdict
 import itertools
-from typing import List
+from typing import List, Generator
 
 def get_user_input(film_list: list[Film]) -> defaultdict:
     films_to_watch = defaultdict(set)
@@ -31,6 +31,18 @@ def get_user_input(film_list: list[Film]) -> defaultdict:
             print('Invalid input. Please try again')
 
     return films_to_watch
+
+def date_generator() -> Generator[date, None, None]:
+    start_date = date(2022, 10, 27)
+    end_date = date(2022, 11, 6)
+    delta = timedelta(days=1)  # Increment iteration by one day
+    while (start_date <= end_date):
+        yield start_date
+        start_date += delta
+
+def print_dates() -> None:
+    for index, date in enumerate(date_generator()):
+        print(f'[{index+1:03d}]: {date}')
 
 def print_film_names(film_list: list[Film]) -> None:
     for index, film in enumerate(film_list):
@@ -152,8 +164,8 @@ Film Screening: {film[1].__str__()}
 def sort_combination_by_start_time(unique_films_tuples: \
     List[tuple[tuple[str, Screening]]]) -> List[List[tuple[str, Screening]]]:
     '''
-    Sort the combination of films in the list of film tuples by the 
-    start time of the screenings. 
+    Sort the combination of films in the list of film tuples by the
+    start time of the screenings.
     '''
     sorted_unique_film_tuples = []
     for combination in unique_films_tuples:
@@ -186,9 +198,8 @@ def get_optimal_watchlist(sorted_unique_film_tuples: List[List[tuple[str, Screen
                 combination.remove(film_tuple)  # This movie is causing an overlap
                 index -= 1
                 prev_end = min(end_time, prev_end)  # Remove the screening that ends later
-    
     max_len = len(max(sorted_unique_film_tuples, key=len))  # Length of longest combination
-    print(max_len) 
+    print(max_len)
     optimal_watchlist = [combination for combination in sorted_unique_film_tuples if len(combination) == max_len]
     return optimal_watchlist
 
@@ -206,6 +217,7 @@ def main() -> None:
     # 128 (two screenings)
     films_to_watch = get_user_input(film_list=film_list)
     print_film_list(film_dict=films_to_watch)
+    print_dates()
     films_tuples = convert_film_dict_2_tuples(films_dict=films_to_watch)
     unique_films_tuples = create_unique_film_list(films_tuples=films_tuples)
     # print_unique_films_tuples(unique_films_tuples=unique_films_tuples)
