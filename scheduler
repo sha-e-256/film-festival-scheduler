@@ -13,24 +13,44 @@ from collections import defaultdict
 import itertools
 from typing import List, Generator
 
-def get_user_input(film_list: list[Film]) -> defaultdict:
-    films_to_watch = defaultdict(set)
+def get_user_film_dict(film_list: list[Film]) -> defaultdict:
+    user_film_dict = defaultdict(set)
     while True:
+        upper_bound = len(film_list)
         try:
-            film_to_watch_index = int(input('Enter a number 1 to 182 (Enter -1 to exit): '))
-            if film_to_watch_index in range(1, 183):
-                films_to_watch[film_to_watch_index - 1] = film_list[film_to_watch_index - 1]
-                # If user adds a duplicate option; it does not add a duplicate
-                # film to the list because a dict is used
-                print(f'Added film {film_list[film_to_watch_index - 1].film_name} to watchlist.')
-            elif film_to_watch_index == -1:
+            user_film_index = int(input(f'Enter a number 1 to {upper_bound} (Enter -1 to exit): '))
+            # Validate input
+            if user_film_index in range(1, upper_bound + 1):
+                user_film_dict[user_film_index - 1] = film_list[user_film_index - 1]
+                # usr_film_list is a set so not duplicates will be added
+                print(f'Added film {film_list[user_film_index - 1].film_name} to watchlist.')
+            elif user_film_index == -1:
                 break
             else:
                 print('Invalid input. Please try again.')
         except ValueError:
             print('Invalid input. Please try again')
 
-    return films_to_watch
+    return user_film_dict
+
+def get_user_date_dict(date_list: List[date]) -> defaultdict:
+    user_date_dict = defaultdict(set)
+    while True:
+        upper_bound = len(date_list)
+        try:
+            user_date_index = int(input(f'Enter a number 1 to {upper_bound} (Enter -1 to exit): '))
+            # Validate input
+            if user_date_index in range(1, upper_bound + 1):
+                user_date_dict[user_date_index - 1] = date_list[user_date_index - 1]
+                print(f'Added date {date_list[user_date_index - 1]}.')
+            elif user_date_index == -1:
+                break
+            else:
+                print('Invalid input. Please try again.')
+        except ValueError:
+            print('Invalid input. Please try again')
+
+    return user_date_dict
 
 def date_generator() -> Generator[date, None, None]:
     start_date = date(2022, 10, 27)
@@ -40,11 +60,17 @@ def date_generator() -> Generator[date, None, None]:
         yield start_date
         start_date += delta
 
-def print_dates() -> None:
-    for index, date in enumerate(date_generator()):
+def print_date_list(date_list: List[date]) -> None:
+    for index, date in enumerate(date_list):
         print(f'[{index+1:03d}]: {date}')
 
-def print_film_names(film_list: list[Film]) -> None:
+def get_date_list() -> List[date]:
+    date_list = []
+    for date in date_generator():
+        date_list.append(date)
+    return date_list
+
+def print_film_list(film_list: list[Film]) -> None:
     for index, film in enumerate(film_list):
         print(f'[{index+1:03d}]: {film.film_name}')
         # 03d: 3 digits pad with zeros
@@ -119,12 +145,12 @@ def generate_film_list(file_name: str) -> list[Film]:
     browser.quit()
     return film_list
 
-def print_film_list(film_dict: defaultdict(set)) -> None:
+def print_film_dict(film_dict: defaultdict(set)) -> None:
     # Print all the values that yield from the generator
     print('\n--Watchlist:--\n')
     [print(film.film_name) for film in film_dict.values()]
 
-def convert_film_dict_2_tuples(films_dict: defaultdict(set)) \
+def convert_film_dict_to_list(films_dict: defaultdict(set)) \
     -> List[List[tuple[str, Screening]]]:
     '''
     Convert the dict into a list of tuples such that each tuple contains
@@ -212,16 +238,24 @@ def main() -> None:
         save_film_list(film_list=film_list, dst_file_name=file_name)
     else:
         film_list = load_film_list(src_file_name=file_name)
-    print_film_names(film_list=film_list)
-    # Test using 127 (three screenings) and
-    # 128 (two screenings)
-    films_to_watch = get_user_input(film_list=film_list)
-    print_film_list(film_dict=films_to_watch)
-    print_dates()
-    films_tuples = convert_film_dict_2_tuples(films_dict=films_to_watch)
-    unique_films_tuples = create_unique_film_list(films_tuples=films_tuples)
+    
+    print_film_list(film_list)
+    user_film_dict = get_user_film_dict(film_list)
+    
+    print_film_dict(user_film_dict)
+
+    date_list = get_date_list()
+    print_date_list(date_list)
+    user_date_dict = get_user_date_dict(date_list)
+    
+    # This might not be needed
+    curr_user = User(film_dict=user_film_dict,
+                     date_dict=user_date_dict)
+
+    user_film_list = convert_film_dict_to_list(user_film_dict)
+    unique_films_tuples = create_unique_film_list(user_film_list)
     # print_unique_films_tuples(unique_films_tuples=unique_films_tuples)
-    sorted_unique_film_tuples = sort_combination_by_start_time(unique_films_tuples=unique_films_tuples)
+    sorted_unique_film_tuples = sort_combination_by_start_time(unique_films_tuples)
     nonoverlapping_screenings = get_optimal_watchlist(sorted_unique_film_tuples)
     print_unique_films_tuples(nonoverlapping_screenings)
 

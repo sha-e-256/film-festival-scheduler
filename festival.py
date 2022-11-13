@@ -103,11 +103,11 @@ class User:
     -----------
     film_dict: defaultdict(set)
         A hashset of all films a user would like to see.
-    avail_dates: defaultdict(set)
+    date_dict: defaultdict(set)
         A hashset of all dates a user is available
     '''
     def __init__(self, film_dict: defaultdict(set),
-                 avail_dates: defaultdict(set)) -> None:
+                 date_dict: defaultdict(set)) -> None:
         '''
         The constructor for the User class
 
@@ -115,8 +115,8 @@ class User:
         -----------
         film_dict: defaultdict(set)
             A hashset of all films a user would like to see.
-        avail_dates: defaultdict(set)
+        date_dict: defaultdict(set)
             A hashset of all dates a user is available
         '''
         self.film_dict = film_dict
-        self.avail_dates = avail_dates
+        self.date_dict = date_dict
