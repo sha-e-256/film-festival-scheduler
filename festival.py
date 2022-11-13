@@ -1,6 +1,7 @@
 import time
 from datetime import date, datetime
-import typing
+from typing import List
+from collections import defaultdict
 
 
 class Screening:
@@ -68,7 +69,7 @@ class Film:
         as the time, date, and location.
     '''
     def __init__(self, film_name: str,
-                 film_screenings: [Screening]) -> None:
+                 film_screenings: List[Screening]) -> None:
         '''
         The constructor for the Film class
 
@@ -93,3 +94,29 @@ class Film:
         # List comprehension using a string
         text = text.join(screening.__str__() for screening in self.film_screenings)
         return text
+
+class User:
+    '''
+    This class stores information on a user's choices
+
+    Attributes:
+    -----------
+    film_dict: defaultdict(set)
+        A hashset of all films a user would like to see.
+    avail_dates: defaultdict(set)
+        A hashset of all dates a user is available
+    '''
+    def __init__(self, film_dict: defaultdict(set),
+                 avail_dates: defaultdict(set)) -> None:
+        '''
+        The constructor for the User class
+
+        Parameters:
+        -----------
+        film_dict: defaultdict(set)
+            A hashset of all films a user would like to see.
+        avail_dates: defaultdict(set)
+            A hashset of all dates a user is available
+        '''
+        self.film_dict = film_dict
+        self.avail_dates = avail_dates
