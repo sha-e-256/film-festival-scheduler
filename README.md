@@ -25,7 +25,7 @@ interfere with a future film.
 ## How to use the project to develop a schedule
 To create a schedule, clone the project into a directory of your choice using:
 ```
-https://github.com/sha-e-256/film-festival-scheduler.git
+git clone https://github.com/sha-e-256/film-festival-scheduler.git
 ```
 To execute the script, type the following into the terminal in the same 
 directory the project has been cloned into:
