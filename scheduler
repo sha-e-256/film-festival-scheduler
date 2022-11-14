@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from webdriver_manager.firefox import GeckoDriverManager
-from festival import Film, Screening, User
+from festival import Film, Screening
 from datetime import date, datetime, timedelta
 import pickle
 import os
@@ -97,13 +97,11 @@ def print_user_film_dict(user_film_dict: defaultdict(set)) -> None:
     [print(user_film.film_name) for user_film in user_film_dict.values()]
 
 def save_film_dict(film_dict: defaultdict(set), dst_file_name: str) -> None:
-
     with open(file=dst_file_name, mode="wb") as file:
         pickle.dump(obj=film_dict, file=file)
         file.close()
 
 def load_film_dict(src_file_name: str) -> defaultdict:
-
     with open(file=src_file_name, mode="rb") as file:
         film_dict = pickle.load(file=file)
     file.close()
@@ -181,8 +179,8 @@ def convert_date_dict_to_list(date_dict: defaultdict(set)) \
     date_list = [date for date in date_dict.values()]
     return date_list
 
-def convert_film_dict_to_list(film_dict: defaultdict(set)) \
-    -> List[List[tuple[str, Screening]]]:
+def convert_film_dict_to_list(film_dict: defaultdict(set), \
+    user_date_list: List[date]) -> List[List[tuple[str, Screening]]]:
     '''
     Convert the dict into a list of tuples such that each tuple contains
     the name of the film, and the Screening object; this is done so that the
@@ -193,7 +191,8 @@ def convert_film_dict_to_list(film_dict: defaultdict(set)) \
     # Each tuple contains the film name and one screening
     for film in film_dict.values():
         film_tuple = [(film.film_name, film_screening) \
-                        for film_screening in film.film_screenings]
+                        for film_screening in film.film_screenings \
+                        if film_screening.screening_date in user_date_list]
         film_tuple_list.append(film_tuple)
     return film_tuple_list
 
@@ -207,16 +206,19 @@ def create_unique_film_list(film_tuple_list: List[List[tuple[str, Screening]]]) 
     unique_film_tuple_list = list(itertools.product(*film_tuple_list))
     return unique_film_tuple_list
 
-def print_optimal_watchlist(unique_films_tuples: \
+def print_optimal_watchlist(unique_film_tuple_list: \
     List[list[tuple[str, Screening]]]) -> None:
     print('--Watchlist with Optimal Viewing Schedule:--')
-    for i, combination in enumerate(unique_films_tuples):
-        print(f'--Combination {i + 1}--')
-        for film in combination:
-            print(f'''\
+    if unique_film_tuple_list == []:
+        print('No possible combinations exist to view the films you would like to see.')
+    else:
+        for i, combination in enumerate(unique_film_tuple_list):
+            print(f'--Combination {i + 1}--')
+            for film in combination:
+                print(f'''\
 Film Name: {film[0]}
 Film Screening: {film[1].__str__()}\
-            ''')
+                ''')
 
 def sort_list_by_start_time(unique_film_tuple_list: \
     List[tuple[tuple[str, Screening]]]) -> List[List[tuple[str, Screening]]]:
@@ -263,10 +265,13 @@ def get_optimal_watchlist(combination_list: \
                 prev_end = min(end_time, prev_end)
     
     # Amount of films in the combination w/ the most films
-    max_len = len(max(combination_list, 
-                      key=len))
-    optimal_watchlist = [comb for comb in \
-        combination_list if len(comb) == max_len]
+    try:
+        max_len = len(max(combination_list, 
+                        key=len))
+        optimal_watchlist = [comb for comb in \
+            combination_list if len(comb) == max_len]
+    except ValueError:
+        optimal_watchlist = []
     return optimal_watchlist
 
 
@@ -289,7 +294,7 @@ def main() -> None:
     user_film_dict = get_user_film_dict(film_dict)
     print_user_film_dict(user_film_dict)
     
-    user_film_list = convert_film_dict_to_list(user_film_dict)
+    user_film_list = convert_film_dict_to_list(user_film_dict, user_date_list)
     unique_user_film_list = create_unique_film_list(user_film_list)
     sorted_unique_user_film_list = \
         sort_list_by_start_time(unique_user_film_list)
