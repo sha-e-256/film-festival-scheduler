@@ -19,7 +19,8 @@ The user can use the `scheduler` script to develop an optimal schedule for
 viewing films by inputting the films they would like to see, and the dates and
 times they are available. The optimal schedule is developped using a greedy
 algorithm which determines the optimal schedule by always selecting
-non-overlapping films that end the earliest. 
+non-overlapping films and removing films that end later and may possibly
+interfere with a future film.  
 
 ## How to use the project to develop a schedule
 To create a schedule, clone the project into a directory of your choice using:
