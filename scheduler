@@ -110,7 +110,7 @@ def load_film_dict(src_file_name: str) -> defaultdict:
 def generate_film_dict(file_name: str) -> defaultdict:
     film_dict = defaultdict(set)  # Create a list of Film objects
     screening_dict = defaultdict(set)  # Create a list of Screening objects
-    
+
     browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
     browser.get('https://windsorfilmfestival.com/')
     film_list_button = browser.find_element(by=By.PARTIAL_LINK_TEXT,
@@ -132,21 +132,22 @@ def generate_film_dict(file_name: str) -> defaultdict:
         for screening_index, screening in enumerate(screening_list):
             screening_str = screening.text
             screening_str_list = screening_str.split('\n')
-            
+
             screening_start_time_str = film_screen_str_list[-1]
-            screening_start_time = datetime.strptime(screening_start_time_str, 
+            screening_start_time = datetime.strptime(screening_start_time_str,
                                                      '%I:%M %p')
-            
+
             film_length = 100  # Hardcode for now
-            
-            screening_end_time = screening_start_time + timedelta(minutes=film_length)
-            
+
+            screening_end_time = screening_start_time + \
+                timedelta(minutes=film_length)
+
             screening_date_str = screening_str_list[0]
             screening_date = datetime.strptime(screening_date_str,
-                                        '%a %b %d').date()  
+                                        '%a %b %d').date()
             # Year defaults to 1899; change to 2022
             screening_date_correct_year = screening_date.replace(2021)
-            
+
             screening_location = screening_str_list[1]
 
             # Make a Screening object
@@ -160,7 +161,7 @@ def generate_film_dict(file_name: str) -> defaultdict:
         curr_film = Film(film_name, screening_dict)
         film_dict[film_data_index] = curr_film
         screening_dict.clear()  # Empty the dict of screenings
-        
+
         '''
         moreInfo_button = filmData.find_element(by=By.PARTIAL_LINK_TEXT,
                                                 value='MORE INFO')
@@ -199,7 +200,7 @@ def convert_film_dict_to_list(film_dict: defaultdict(set), \
 def create_unique_film_list(film_tuple_list: List[List[tuple[str, Screening]]]) \
     -> List[tuple[tuple[str, Screening]]]:
     '''
-    Return the cartesian product such that each combination the viewing the 
+    Return the cartesian product such that each combination the viewing the
     films only contains one screening for each film.
     '''
     # This method a list of tuples of tuples; not a list of lists of tuples
@@ -210,7 +211,7 @@ def print_optimal_watchlist(unique_film_tuple_list: \
     List[list[tuple[str, Screening]]]) -> None:
     print('--Watchlist with Optimal Viewing Schedule:--')
     if unique_film_tuple_list == []:
-        print('No possible combinations exist to view the films you would like to see.')
+        print('No possible combinations exist to view any film.')
     else:
         for i, combination in enumerate(unique_film_tuple_list):
             print(f'--Combination {i + 1}--')
@@ -231,8 +232,8 @@ def sort_list_by_start_time(unique_film_tuple_list: \
         combination_list = list(combination)
 
         # Sort by the screening start time using the lambda function
-        # The second element in the tuple is the Screening objects 
-        combination_list.sort(key=lambda x: x[1].screening_time_start) 
+        # The second element in the tuple is the Screening objects
+        combination_list.sort(key=lambda x: x[1].screening_time_start)
         sorted_unique_film_tuples.append(combination_list)
     return sorted_unique_film_tuples
 
@@ -241,7 +242,7 @@ def get_optimal_watchlist(combination_list: \
     -> List[List[tuple[str, Screening]]]:
     '''
     Return all combinations of films where none of the films in each
-    combination are overlapping. 
+    combination are overlapping.
     '''
     for comb in combination_list:
         # Start at the first tuple in the combination list
@@ -257,16 +258,16 @@ def get_optimal_watchlist(combination_list: \
             curr_screening_date = film_tuple[1].screening_date
             prev_screening_date = comb[index][1].screening_date
             if (start_time >= prev_end or \
-                curr_screening_date != prev_screening_date): 
+                curr_screening_date != prev_screening_date):
                 prev_end = end_time  # No overlap; check the next film
             else:
                 # Remove the screening that ends later
                 comb.remove(film_tuple)
                 prev_end = min(end_time, prev_end)
-    
+
     # Amount of films in the combination w/ the most films
     try:
-        max_len = len(max(combination_list, 
+        max_len = len(max(combination_list,
                         key=len))
         optimal_watchlist = [comb for comb in \
             combination_list if len(comb) == max_len]
@@ -280,7 +281,7 @@ def main() -> None:
     film_objects_file_exists = os.path.exists(file_name)
     if not film_objects_file_exists:
         film_dict = generate_film_dict(file_name=file_name)
-        save_film_dict(film_dict=film_dict, 
+        save_film_dict(film_dict=film_dict,
                        dst_file_name=file_name)
     else:
         film_dict = load_film_dict(src_file_name=file_name)
@@ -293,7 +294,7 @@ def main() -> None:
     print_film_dict(film_dict)
     user_film_dict = get_user_film_dict(film_dict)
     print_user_film_dict(user_film_dict)
-    
+
     user_film_list = convert_film_dict_to_list(user_film_dict, user_date_list)
     unique_user_film_list = create_unique_film_list(user_film_list)
     sorted_unique_user_film_list = \
