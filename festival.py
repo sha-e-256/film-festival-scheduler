@@ -47,10 +47,11 @@ class Screening:
         on a screening
         '''
         text = textwrap.dedent(f'''\
-                                Start Time: {self.screening_time_start.time()}
-                                End Time: {self.screening_time_end.time()}
-                                Date: {self.screening_date}
-                                Location: {self.screening_location}''')
+        Start Time: {self.screening_time_start.time()}
+        End Time: {self.screening_time_end.time()}
+        Date: {self.screening_date}
+        Location: {self.screening_location}
+        ''')
         return text
 
 
