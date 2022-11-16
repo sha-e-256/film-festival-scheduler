@@ -6,19 +6,20 @@ displayed at a film festival using a web scraper and then develop an optimal
 viewing schedule for the user of the films they would like to see.
 '''
 
+from collections import defaultdict
+from datetime import date, datetime, timedelta
+from festival import Film, Screening
+import itertools
+import os
+import pickle
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from webdriver_manager.firefox import GeckoDriverManager
-from festival import Film, Screening
-from datetime import date, datetime, timedelta
-import pickle
-import os
-from collections import defaultdict
-import itertools
-from typing import List, Generator
 import textwrap
+from typing import List, Generator
+from webdriver_manager.firefox import GeckoDriverManager
+
 
 '''
 This function prompts the user for the films they would like to see;
