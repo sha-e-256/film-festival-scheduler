@@ -1,7 +1,6 @@
-import time
 from datetime import date, datetime
 from typing import List
-from collections import defaultdict
+import textwrap
 
 
 class Screening:
@@ -47,13 +46,13 @@ class Screening:
         Creates a well-formatted string that displays the information
         on a screening
         '''
-        text = f'''
-    Start Time: {self.screening_time_start.time()}
-    End Time: {self.screening_time_end.time()}
-    Date: {self.screening_date}
-    Location: {self.screening_location}\
-    '''
+        text = textwrap.dedent(f'''\
+                                Start Time: {self.screening_time_start.time()}
+                                End Time: {self.screening_time_end.time()}
+                                Date: {self.screening_date}
+                                Location: {self.screening_location}''')
         return text
+
 
 class Film:
     '''

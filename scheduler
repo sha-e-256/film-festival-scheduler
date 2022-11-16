@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 '''
-The purpose of this module is to scrape the information on films
-being displayed at a film festival using a web scraper and then allow 
-the user to develop an optimal viewing schedule of the films they would like
-to see using a greedy algorithm.
+The purpose of this module is to scrape the information on films being 
+displayed at a film festival using a web scraper and then develop an optimal
+viewing schedule for the user of the films they would like to see.
 '''
 
 from selenium import webdriver
@@ -19,9 +18,10 @@ import os
 from collections import defaultdict
 import itertools
 from typing import List, Generator
+import textwrap
 
 
-def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict:
+def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
     '''
     Generates a selection menu which prompts the user for the films they would
     like to see.
@@ -42,10 +42,16 @@ def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict:
             user_film_index = int(input(msg))
             # Validate input
             if user_film_index in range(1, upper_bound + 1):
-                user_film_dict[user_film_index - 1] = \
-                    film_dict[user_film_index - 1]
-                # usr_film_list is a set so not duplicates will be added
-                msg = f'Added film: {film_dict[user_film_index - 1].film_name}'
+                if not user_film_dict[user_film_index -1]:
+                    user_film_dict[user_film_index - 1] = \
+                        film_dict[user_film_index - 1]
+                    # usr_film_list is a set so not duplicates will be added
+                    msg = f'Added film: {film_dict[user_film_index - 1].film_name}'
+                else:
+                    msg = textwrap.dedent(f'''\
+                           The watchlist already contains the film: {film_dict[user_film_index - 1].film_name}.
+                           Please select a film you have not already added.\
+                           ''')
                 print(msg)
             elif user_film_index == -1:
                 if len(user_film_dict) != 0:
