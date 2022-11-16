@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-The purpose of this module is to scrape the information on films being 
+The purpose of this module is to scrape the information on films being
 displayed at a film festival using a web scraper and then develop an optimal
 viewing schedule for the user of the films they would like to see.
 '''
@@ -23,20 +23,23 @@ from webdriver_manager.firefox import GeckoDriverManager
 
 '''
 This function prompts the user for the films they would like to see;
-The list of films they user would like to see is stored a dict. A dict is
+The list of films the user would like to see is stored as a dict. A dict is
 chosen because a dict can be used to enforce that no duplicate films are
-chosen. 
+chosen.
 '''
+
+
 def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
     '''
-    Prompts the user for the films they would like to see
-    Returns a dict of Film objects of the films the user would like to see. 
-        
+    Prompts the user for the films they would like to see.
+    Returns a dict of Film objects of the films the user would like to see.
+
         Parameters:
-            film_dict (defaultdict(set)): A dict of all the films
+            film_dict (defaultdict(set)): A dict of all the films stored as 
+            Film objects
         Returns:
             user_film_dict (defaultdict(set)): A dict of the films the user
-            would like to see
+            would like to see stored as Film objects
     '''
     user_film_dict = defaultdict(set)
     print('--Select Films--')
@@ -47,7 +50,7 @@ def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
             user_film_index = int(input(msg))
             # Validate input
             if user_film_index in range(1, upper_bound + 1):
-                if not user_film_dict[user_film_index -1]:
+                if not user_film_dict[user_film_index - 1]:
                     user_film_dict[user_film_index - 1] = \
                         film_dict[user_film_index - 1]
                     # usr_film_list is a set so not duplicates will be added
@@ -73,15 +76,28 @@ def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
 
 '''
 This function prompts the user for the dates that they are available.
-The list of dates that the iser is available is stored a dict. A dict is
+The list of dates that the user is available is stored as dict. A dict is
 chosen because a dict can be used to enforce that no duplicate dates are
-chosen. 
+chosen.
 '''
-''' 
+
+'''
 This function should be combined with get_user_film_dict; a flag can be used
-to determine if the prompt is related to the films or the dates. 
+to determine if the prompt is related to the films or the dates.
 '''
+
+
 def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
+    '''
+    Prompts the user for the dates that they are available.
+    Returns a dict of dates of the dates the user is available.
+
+        Parameters:
+            date_dict (defaultdict(set)): A dict of all the dates
+        Returns:
+            user_date_dict (defaultdict(set)): A dict of all the dates
+            the user is available 
+    '''
     user_date_dict = defaultdict(set)
     print('--Select Dates:--')
     while True:
@@ -113,9 +129,17 @@ def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
 
     return user_date_dict
 
-def date_generator() -> Generator[date, None, None]:
-    start_date = date(2022, 10, 27)
-    end_date = date(2022, 11, 6)
+
+'''
+This functon is a generator. It yields the dates between two dates: the first
+day of the festival and the last day of the festival. A generator is used 
+because a generator can be used to create an enumerator (which more efficient 
+than hard-coding all the dates).
+'''
+def date_generator(start_date: date, end_date: date) -> Generator[date, None, None]:
+    '''
+    Yields a date from the film festival. 
+    '''
     delta = timedelta(days=1)  # Increment iteration by one day
     while (start_date <= end_date):
         yield start_date
@@ -126,9 +150,9 @@ def print_date_dict(date_dict: defaultdict(set)) -> None:
     for index, date in enumerate(date_dict.values()):
         print(f'[{index+1:03d}]: {date_dict[index]}')
 
-def get_date_dict() -> defaultdict:
+def get_date_dict(start_date: date, end_date: date) -> defaultdict:
     date_dict = defaultdict(set)
-    for index, date in enumerate(date_generator()):
+    for index, date in enumerate(date_generator(start_date, end_date)):
         date_dict[index] = date
     return date_dict
 
@@ -333,7 +357,8 @@ def main() -> None:
     else:
         film_dict = load_film_dict(src_file_name=file_name)
 
-    date_dict = get_date_dict()
+    start_date, end_date = date(2022, 10, 27), date(2022, 11, 6)
+    date_dict = get_date_dict(start_date, end_date)
     print_date_dict(date_dict)
     user_date_dict = get_user_date_dict(date_dict)
     user_date_list = convert_date_dict_to_list(user_date_dict)
