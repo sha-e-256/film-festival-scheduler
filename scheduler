@@ -20,11 +20,15 @@ import itertools
 from typing import List, Generator
 import textwrap
 
-
+'''
+This function prompts the user for the films they would like to see;
+The list of films they user would like to see is stored a dict. A dict is
+chosen because a dict can be used to enforce that no duplicate films are
+chosen. 
+'''
 def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
     '''
-    Generates a selection menu which prompts the user for the films they would
-    like to see.
+    Prompts the user for the films they would like to see
     Returns a dict of Film objects of the films the user would like to see. 
         
         Parameters:
@@ -49,9 +53,9 @@ def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
                     msg = f'Added film: {film_dict[user_film_index - 1].film_name}'
                 else:
                     msg = textwrap.dedent(f'''\
-                           The watchlist already contains the film: {film_dict[user_film_index - 1].film_name}.
-                           Please select a film you have not already added.\
-                           ''')
+                    The watchlist already contains the film: {film_dict[user_film_index - 1].film_name}.
+                    Please select a film you have not already added.\
+                    ''')
                 print(msg)
             elif user_film_index == -1:
                 if len(user_film_dict) != 0:
@@ -65,19 +69,36 @@ def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
 
     return user_film_dict
 
-def get_user_date_dict(date_list: List[date]) -> defaultdict:
+
+'''
+This function prompts the user for the dates that they are available.
+The list of dates that the iser is available is stored a dict. A dict is
+chosen because a dict can be used to enforce that no duplicate dates are
+chosen. 
+'''
+''' 
+This function should be combined with get_user_film_dict; a flag can be used
+to determine if the prompt is related to the films or the dates. 
+'''
+def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
     user_date_dict = defaultdict(set)
     print('--Select Dates:--')
     while True:
-        upper_bound = len(date_list)
+        upper_bound = len(date_dict)
         try:
             msg = f'Enter a number 1 to {upper_bound} (Enter -1 to exit): '
             user_date_index = int(input(msg))
             # Validate input
             if user_date_index in range(1, upper_bound + 1):
-                user_date_dict[user_date_index - 1] = \
-                    date_list[user_date_index - 1]
-                msg = f'Added date: {date_list[user_date_index - 1]}.'
+                if not user_date_dict[user_date_index - 1]:
+                    user_date_dict[user_date_index - 1] = \
+                        date_dict[user_date_index - 1]
+                    msg = f'Added date: {date_dict[user_date_index - 1]}.'
+                else:
+                    msg = textwrap.dedent(f'''\
+                    The list of dates already contains the date: {date_dict[user_date_index - 1]}.
+                    Please select a date you have not already added.\
+                    ''')
                 print(msg)
             elif user_date_index == -1:
                 if len(user_date_dict) != 0:
