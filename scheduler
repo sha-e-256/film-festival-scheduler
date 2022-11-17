@@ -75,25 +75,22 @@ def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
     return user_film_dict
 
 
-'''
-This function prompts the user for the dates that they are available.
-The list of dates that the user is available is stored as dict. A dict is
-chosen because a dict can be used to enforce that no duplicate dates are
-chosen.
-This function should be combined with get_user_film_dict; a flag can be used
-to determine if the prompt is related to the films or the dates.
-'''
+# This method should be combined with the 'get_user_film_dict' method.
+# A flag can be used to determine if the prompt is related to the films or the dates.
 def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
-    '''
-    Prompts the user for the dates that they are available.
-    Returns a dict of dates of the dates the user is available.
+    """Prompt the user for the dates that they are available.
 
-        Parameters:
-            date_dict (defaultdict(set)): A dict of all the dates
-        Returns:
-            user_date_dict (defaultdict(set)): A dict of all the dates
-            the user is available
-    '''
+    Returns a dict of dates the user is available.
+
+    Parameters:
+    -----------
+        date_dict : defaultdict(set)
+            A dict of all the dates the films are being shown.
+    Returns:
+    --------
+        user_date_dict : defaultdict(set)
+            A dict of the dates that the user is available.
+    """
     user_date_dict = defaultdict(set)
     print('-- Select Dates: --')
     while True:
@@ -126,22 +123,28 @@ def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
     return user_date_dict
 
 
-'''
-This functon is a generator. It yields the dates between two dates: the first
-day of the festival and the last day of the festival. A generator is used
-because a generator can be used to create an enumerator (which is more
-efficient than hard-coding all the dates).
-'''
-def date_generator(start_date: date, end_date: date) -> Generator[date, None, None]:
-    '''
-    Yields a date from the film festival.
 
-        Parameters:
-            start_date (date): The first day of the festival
-            end_date (date): The last day of the festival
-        Yields:
-            curr_day (date): The date the generator yields
-    '''
+# This method is a generator. It yields a date between two dates: the first
+# day of the festival and the last day of the festival. A generator is used
+# because a generator can be used to create an enumerator (which is more
+# efficient than hard-coding all the dates, especially if there will be a lot
+# of dates).
+def date_generator(start_date: date, end_date: date) -> Generator[date, None, None]:
+    """Yield a date from the film festival.
+
+    Parameters:
+    -----------
+    start_date: datetime
+        The first day of the festival.
+    end_date: datetime
+        The last day of the festival.
+
+    Yields:
+    -------
+    curr_day: datetime
+        The date that the generator yields between the first and last day
+        of the festival
+    """
     delta = timedelta(days=1)  # Increment iteration by one day
     curr_day = start_date
     while (curr_day <= end_date):
@@ -149,36 +152,39 @@ def date_generator(start_date: date, end_date: date) -> Generator[date, None, No
         curr_day += delta
 
 
-'''
-This function prints a selection menu that the user can use to select the
-dates that they are available. The function is used in conjunction with
-the 'get_user_date_dict' function.
-'''
+#This method is used in conjunction with the 'get_user_date_dict' method.
 def print_date_dict(date_dict: defaultdict(set)) -> None:
-    '''
-    Prints a selection menu of all the dates of the festival.
+    """Print a selection menu of all the dates the films are being shown.
 
-        Parameters:
-            date_dict (defaultdict(set)): A dict of all the dates
-    '''
+    Parameters:
+    -----------
+        date_dict: defaultdict(set)
+            A dict of all the dates the films are being shown.
+    """
     print('--Dates:--')
     for index, date in enumerate(date_dict.values()):
         # :03d forces the number to be three digits; if less than three digits,
         # add zero padding
         print(f'[{index+1:03d}]: {date_dict[index]}')
 
-'''
-This functions creates the dict of all the dates using
-the generator function 'date_generator'
-'''
-def get_date_dict(start_date: date, end_date: date) -> defaultdict(set):
-    '''
-    Returns a dict of all the dates.
 
-        Parameters:
-            start_date (date): The first day of the festival
-            end_date (date): The last day of the festival
-    '''
+# This functions creates the dict of all the dates using the generator 
+# 'date_generator'
+def get_date_dict(start_date: date, end_date: date) -> defaultdict(set):
+    """Return a dict of all the dates the films are being shown.
+
+    Parameters:
+    -----------
+        start_date: datetime
+            The first day of the festival.
+        end_date: 
+            The last day of the festival.
+    
+    Returns:
+    --------
+        date_dict: defaultdict(set)
+            a dict of all the dates the films are being shown.
+    """
     date_dict = defaultdict(set)
     for index, date in enumerate(date_generator(start_date, end_date)):
         date_dict[index] = date
