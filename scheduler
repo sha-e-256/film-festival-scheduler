@@ -187,6 +187,10 @@ This function prints a selection menu that the user can use to select the
 movies they would like to see. This function is used in conjunction with the
 'get_user_film_dict' function.
 '''
+'''
+This should be combined with the print_date_dict function as well.
+Follow DRY (Don't Repeat Yourself); avoid writing redundant methods...
+'''
 def print_film_dict(film_dict: defaultdict(set)) -> None:
     '''
     Prints a selection menu of all the films at the festival.
@@ -207,13 +211,11 @@ def print_film_dict(film_dict: defaultdict(set)) -> None:
 Prints the list of films the user has chosen. 
 '''
 def print_user_film_dict(user_film_dict: defaultdict(set)) -> None:
-    '''
-    Prints the list of films the user has chosen.
-
-        Parameters:
-            user_film_dict (defaultdict(set)): A dict of the films the user 
-            would like to see
-    '''
+    '''Prints a dict of the films the user has chosen.
+    Parameters:
+    -----------
+    user_film_dict: defaultdict(set): 
+        A dict of the films the user would like to see'''
     print('-- Watchlist: --')
     [print(user_film.film_name) for user_film in user_film_dict.values()]
 
@@ -537,6 +539,7 @@ def main() -> None:
     print_film_dict(film_dict)
     user_film_dict = get_user_film_dict(film_dict)
     print_user_film_dict(user_film_dict)
+    print(print_user_film_dict.__doc__)
 
     user_film_list = convert_film_dict_to_list(user_film_dict, user_date_list)
     unique_user_film_list = create_unique_film_list(user_film_list)
