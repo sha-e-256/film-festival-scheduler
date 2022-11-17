@@ -18,6 +18,8 @@ class Screening:
     screening_locaton: str
         The location of the screening.
     '''
+
+
     def __init__(self, screening_time_start: datetime,
                  screening_time_end: datetime,
                  screening_date: date,
@@ -41,10 +43,15 @@ class Screening:
         self.screening_date = screening_date
         self.screening_location = screening_location
 
-    def __str__(self):
+
+    def __str__(self) -> str:
         '''
         Creates a well-formatted string that displays the information
-        on a screening
+        on a screening.
+
+            Returns:
+                text (str): A well-formatted string that displays information
+                on a Screening object.
         '''
         text = dedent(f'''\
         -> Start Time: {self.screening_time_start.time()}
@@ -68,6 +75,8 @@ class Film:
         Screening object in the list contains information on the screening such
         as the time, date, and location.
     '''
+
+
     def __init__(self, film_name: str,
                  film_screenings: List[Screening]) -> None:
         '''
@@ -85,10 +94,16 @@ class Film:
         self.film_name = film_name
         self.film_screenings = film_screenings
 
-    def __str__(self):
+
+
+    def __str__(self) -> str:
         '''
         Creates a well-formatted string that displays the information on
         a film.
+
+            Returns:
+                text (str): a well-formatted string that diisplays information
+                on a Film object.
         '''
         text = f'\nFilm Name: {self.film_name}\nList of Screenings:\n'
         # List comprehension using a string
