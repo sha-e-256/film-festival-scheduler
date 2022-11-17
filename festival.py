@@ -2,6 +2,14 @@ from datetime import date, datetime
 from textwrap import dedent
 from typing import List
 
+'''
+This package contains two classes used to store information
+on films: Film and Screening. A Film object stores the name of a film,
+and a list of Screening objects. A Screening object stores information on
+a particular screening such as start/end time, date, and location.
+This package is used in the 'scheduler' module which is the module used to
+develop a schedule for a user.
+'''
 
 class Screening:
     '''
@@ -107,5 +115,6 @@ class Film:
         '''
         text = f'\nFilm Name: {self.film_name}\nList of Screenings:\n'
         # List comprehension using a string
-        text = text.join(screening.__str__() for screening in self.film_screenings)
+        text = text.join(screening.__str__() for screening in \
+            self.film_screenings)
         return text
