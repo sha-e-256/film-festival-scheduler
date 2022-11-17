@@ -16,7 +16,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-import textwrap
+from textwrap import dedent
 from typing import List, Generator
 from webdriver_manager.firefox import GeckoDriverManager
 
@@ -40,7 +40,7 @@ def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
             would like to see stored as Film objects
     '''
     user_film_dict = defaultdict(set)
-    print('--Select Films--')
+    print('-- Select Films: --')
     while True:
         upper_bound = len(film_dict)
         try:
@@ -54,7 +54,7 @@ def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
                     # usr_film_list is a set so not duplicates will be added
                     msg = f'Added film: {film_dict[user_film_index - 1].film_name}'
                 else:
-                    msg = textwrap.dedent(f'''\
+                    msg = dedent(f'''\
                     The watchlist already contains the film: {film_dict[user_film_index - 1].film_name}.
                     Please select a film you have not already added.\
                     ''')
@@ -92,7 +92,7 @@ def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
             the user is available
     '''
     user_date_dict = defaultdict(set)
-    print('--Select Dates:--')
+    print('-- Select Dates: --')
     while True:
         upper_bound = len(date_dict)
         try:
@@ -105,7 +105,7 @@ def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
                         date_dict[user_date_index - 1]
                     msg = f'Added date: {date_dict[user_date_index - 1]}.'
                 else:
-                    msg = textwrap.dedent(f'''\
+                    msg = dedent(f'''\
                     The list of dates already contains the date: {date_dict[user_date_index - 1]}.
                     Please select a date you have not already added.\
                     ''')
@@ -196,7 +196,7 @@ def print_film_dict(film_dict: defaultdict(set)) -> None:
     '''
     # film_dict is saved to the .dat file as a dict, but for some
     # reason its type is list (investigate this)
-    print('--Films:--')
+    print('-- Films: --')
     for index, film in enumerate(film_dict):
         # :03d forces the number to be three digits; if less than three digits,
         # add zero padding
@@ -214,7 +214,7 @@ def print_user_film_dict(user_film_dict: defaultdict(set)) -> None:
             user_film_dict (defaultdict(set)): A dict of the films the user 
             would like to see
     '''
-    print('--Watchlist:--')
+    print('-- Watchlist: --')
     [print(user_film.film_name) for user_film in user_film_dict.values()]
 
 
@@ -415,17 +415,15 @@ def create_unique_film_list(film_tuple_list: List[List[tuple[str, Screening]]]) 
 
 def print_optimal_watchlist(unique_film_tuple_list: \
     List[list[tuple[str, Screening]]]) -> None:
-    print('--Watchlist with Optimal Viewing Schedule:--')
+    print('-- Watchlist with Optimal Viewing Schedule: --')
     if unique_film_tuple_list == []:
         print('No possible combinations exist to view any film.')
     else:
         for i, combination in enumerate(unique_film_tuple_list):
-            print(f'--Combination {i + 1}--')
+            print(f'-- Combination: {i + 1:03d} --')
             for film in combination:
-                print(f'''\
-Film Name: {film[0]}
-Film Screening: {film[1].__str__()}\
-                ''')
+                print(f'Film Name: {film[0]}')
+                print(f'{film[1].__str__()}')
 
 
 ''' 
