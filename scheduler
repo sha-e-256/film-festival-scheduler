@@ -27,8 +27,6 @@ The list of films the user would like to see is stored as a dict. A dict is
 chosen because a dict can be used to enforce that no duplicate films are
 chosen.
 '''
-
-
 def get_user_film_dict(film_dict: defaultdict(set)) -> defaultdict(set):
     '''
     Prompts the user for the films they would like to see.
@@ -79,14 +77,9 @@ This function prompts the user for the dates that they are available.
 The list of dates that the user is available is stored as dict. A dict is
 chosen because a dict can be used to enforce that no duplicate dates are
 chosen.
-'''
-
-'''
 This function should be combined with get_user_film_dict; a flag can be used
 to determine if the prompt is related to the films or the dates.
 '''
-
-
 def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
     '''
     Prompts the user for the dates that they are available.
@@ -96,7 +89,7 @@ def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
             date_dict (defaultdict(set)): A dict of all the dates
         Returns:
             user_date_dict (defaultdict(set)): A dict of all the dates
-            the user is available 
+            the user is available
     '''
     user_date_dict = defaultdict(set)
     print('--Select Dates:--')
@@ -133,57 +126,160 @@ def get_user_date_dict(date_dict: defaultdict[set]) -> defaultdict(set):
 '''
 This functon is a generator. It yields the dates between two dates: the first
 day of the festival and the last day of the festival. A generator is used 
-because a generator can be used to create an enumerator (which more efficient 
-than hard-coding all the dates).
+because a generator can be used to create an enumerator (which is more 
+efficient than hard-coding all the dates).
 '''
 def date_generator(start_date: date, end_date: date) -> Generator[date, None, None]:
     '''
-    Yields a date from the film festival. 
+    Yields a date from the film festival.
+
+        Parameters:
+            start_date (date): The first day of the festival
+            end_date (date): The last day of the festival
+        Yields:
+            curr_day (date): The date the generator yields
     '''
     delta = timedelta(days=1)  # Increment iteration by one day
-    while (start_date <= end_date):
-        yield start_date
-        start_date += delta
+    curr_day = start_date
+    while (curr_day <= end_date):
+        yield curr_day
+        curr_day += delta
 
+
+'''
+This function prints a selection menu that the user can use to select the 
+dates that they are available. The function is used in conjunction with
+the 'get_user_date_dict' function.
+'''
 def print_date_dict(date_dict: defaultdict(set)) -> None:
+    '''
+    Prints a selection menu of all the dates of the festival.
+
+        Parameters:
+            date_dict (defaultdict(set)): A dict of all the dates
+    '''
     print('--Dates:--')
     for index, date in enumerate(date_dict.values()):
+        # :03d forces the number to be three digits; if less than three digits,
+        # add zero padding
         print(f'[{index+1:03d}]: {date_dict[index]}')
 
-def get_date_dict(start_date: date, end_date: date) -> defaultdict:
+'''
+This functions creates the dict of all the dates using
+the generator function 'date_generator'
+'''
+def get_date_dict(start_date: date, end_date: date) -> defaultdict(set):
+    '''
+    Returns a dict of all the dates.
+
+        Parameters:
+            start_date (date): The first day of the festival
+            end_date (date): The last day of the festival
+    '''
     date_dict = defaultdict(set)
     for index, date in enumerate(date_generator(start_date, end_date)):
         date_dict[index] = date
     return date_dict
 
+
+'''
+This function prints a selection menu that the user can use to select the 
+movies they would like to see. This function is used in conjunction with the
+'get_user_film_dict' function.
+'''
 def print_film_dict(film_dict: defaultdict(set)) -> None:
-    # film_dict is being read as a list even though it is saved as a dict...
+    '''
+    Prints a selection menu of all the films at the festival.
+
+        Parameters:
+            film_dict (defaultdict(set)): A dict of all the films 
+    '''
+    # film_dict is saved to the .dat file as a dict, but for some
+    # reason its type is list (investigate this)
     print('--Films:--')
     for index, film in enumerate(film_dict):
+        # :03d forces the number to be three digits; if less than three digits,
+        # add zero padding
         print(f'[{index+1:03d}]: {film.film_name}')
-        # 03d: 3 digits pad with zeros
 
+
+'''
+Prints the list of films the user has chosen. 
+'''
 def print_user_film_dict(user_film_dict: defaultdict(set)) -> None:
+    '''
+    Prints the list of films the user has chosen.
+
+        Parameters:
+            user_film_dict (defaultdict(set)): A dict of the films the user 
+            would like to see
+    '''
     print('--Watchlist:--')
     [print(user_film.film_name) for user_film in user_film_dict.values()]
 
+
+'''
+Saves the dict of film objects to file. This is done so that the user
+only needs to scrap the website once. Once the information on the website has 
+been scraped, it is saved to a .dat file and the contents of the .dat file
+are accessed every time the user runs the scheduler program. Reading from file
+is significantly quicker than continously scraping the website. 
+'''
 def save_film_dict(film_dict: defaultdict(set), dst_file_name: str) -> None:
+    '''
+    Saves dict of Film objects to a .dat file
+
+        Parameters:
+            film_dict (defaultdict(set)): A dict of film objects
+            dst_film_name (str): Name of file that will store the dict of Film 
+            objects
+    '''
     with open(file=dst_file_name, mode="wb") as file:
         pickle.dump(obj=film_dict, file=file)
         file.close()
 
+
+'''
+Loads the dict of Film objects saved to file into a dict. This is done every
+time the scheduler program runs.
+'''
 def load_film_dict(src_file_name: str) -> defaultdict:
+    '''
+    Loads the contents of a .dat file into a dict of Film objects
+
+        Parameter:
+            src_film_name (str): Name of file that stores the dict of Film 
+            objects
+    '''
     with open(file=src_file_name, mode="rb") as file:
         film_dict = pickle.load(file=file)
     file.close()
     return film_dict
 
-def generate_film_dict(file_name: str) -> defaultdict:
+
+'''
+This is the web scraper which scrapes the film information from
+the film festival's website. Since all the film information is stored
+in the DOM of the webiste, selenium had to be used instead of beautiful soup.
+The content is scraped using XPATH. For each film, the screening information
+is stored as Screening objects in a dict of Screening objects, and the film 
+information is stored as a dict of Film objects.
+'''
+def create_film_dict(website_url: str) -> defaultdict(set):
+    '''
+    Creates a dict of Film objects using information collected
+    from scraping the DOM of the film festival's website.
+
+        Parameters:
+            website_url (str): The URL of the film festival website
+        Returns:
+            film_dict (defaultdict(set)): A dict of Film objects
+    '''
     film_dict = defaultdict(set)  # Create a list of Film objects
     screening_dict = defaultdict(set)  # Create a list of Screening objects
 
     browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
-    browser.get('https://windsorfilmfestival.com/')
+    browser.get(website_url)
     film_list_button = browser.find_element(by=By.PARTIAL_LINK_TEXT,
                                     value='Films & Tickets')
     film_list_button.click()
@@ -208,7 +304,9 @@ def generate_film_dict(file_name: str) -> defaultdict:
             screening_start_time = datetime.strptime(screening_start_time_str,
                                                      '%I:%M %p')
 
-            film_length = 100  # Hardcode for now
+            # This is hardcoded for now. This information can be fetched
+            # by scraping the IMDB page of the film (investigate this)
+            film_length = 100  
 
             screening_end_time = screening_start_time + \
                 timedelta(minutes=film_length)
@@ -223,9 +321,9 @@ def generate_film_dict(file_name: str) -> defaultdict:
 
             # Make a Screening object
             curr_screening = Screening(screening_start_time,
-                                    screening_end_time,
-                                    screening_date_correct_year,
-                                    screening_location)
+                                       screening_end_time,
+                                       screening_date_correct_year,
+                                       screening_location)
             screening_dict[screening_index] = curr_screening
 
         # Make a Film object
@@ -233,46 +331,83 @@ def generate_film_dict(file_name: str) -> defaultdict:
         film_dict[film_data_index] = curr_film
         screening_dict.clear()  # Empty the dict of screenings
 
-        '''
-        moreInfo_button = filmData.find_element(by=By.PARTIAL_LINK_TEXT,
-                                                value='MORE INFO')
-        moreInfo_button.click()
-        film_extras = WebDriverWait(browser, 4999).until(ec.presence_of_all_elements_located(locator=(By.XPATH,
-                                                                                                            "//div[@class='film-extras']")))
-        film_extras_str = film_extras[-1].text
-        film_length = film_extras_str.split('\n')[-2]
-        '''
     browser.quit()
     return film_dict
 
+
+'''
+Converts the dict of dates into a list. This is done so that
+when the optimal schedule is being created, screenings that occur
+on dates not contained in the list of dates are removed. 
+'''
 def convert_date_dict_to_list(date_dict: defaultdict(set)) \
     -> List[date]:
+    '''
+    Converts the dict of dates into a list of dates.
 
+        Parameters:
+            date_dict (defaultdict(set)): A dict of dates.
+        Returns:
+            date_list (List[date]): A list of dates.
+    '''
     date_list = [date for date in date_dict.values()]
     return date_list
 
-def convert_film_dict_to_list(film_dict: defaultdict(set), \
+
+'''
+Converts the dict of Film objects into a list of tuples such
+that each tuple contains the name of the Film, and a single Screening
+object. This is done because the cartesian product is calculated using
+the Screening objects, but the Screening object itself does not contain the
+name of the film. In order to preserve the name of the film, the dict
+of Film objects is converted into a list of tuples. In addition, the
+cartesian product can only be calculated using a list as an input. 
+'''
+
+def convert_film_dict_to_list(user_film_dict: defaultdict(set), \
     user_date_list: List[date]) -> List[List[tuple[str, Screening]]]:
     '''
-    Convert the dict into a list of tuples such that each tuple contains
-    the name of the film, and the Screening object; this is done so that the
-    name of the film that a Screening belongs to is preserved after the
-    cartesian product is generated.
+    Converts the dict of Film object into a list of tuples such that each
+    tuple contains the name of the film and a Screening object.
+    Also deletes screenings that occur on a date the user is not available.
+        
+        Parameters:
+            user_film_dict (defaultdict(set)): A dict of the films the user
+            has chosen.
+            user_date_list (List[date]): A list of the dates the user is
+            available.
+
+        Returns:
+            film_tuple_list (List[List[tuple[str, Screening]]]): A list of 
+            lists of tuples where each tuple contains the name of the film
+            and the Screening object. Each list contains all the Screening objects
+            for a particular film.
     '''
     film_tuple_list = []
     # Each tuple contains the film name and one screening
-    for film in film_dict.values():
+    for film in user_film_dict.values():
         film_tuple = [(film.film_name, film_screening) \
                         for film_screening in film.film_screenings \
                         if film_screening.screening_date in user_date_list]
         film_tuple_list.append(film_tuple)
     return film_tuple_list
 
+
+'''
+Creates the cartesian product which is a list of all the combinations a user
+can watch all the films they have selected (overlapping films have not been
+eliminated at this point).
+'''
 def create_unique_film_list(film_tuple_list: List[List[tuple[str, Screening]]]) \
     -> List[tuple[tuple[str, Screening]]]:
     '''
-    Return the cartesian product such that each combination the viewing the
+    Returns the cartesian product such that each combination of the viewing the
     films only contains one screening for each film.
+
+        Parameters:
+            film_tuple_list List[List[tuple[str, Screening]]]: A list of lists
+            of tuples where each tuple contains the name of the film and
+            a Screening object.
     '''
     # This method a list of tuples of tuples; not a list of lists of tuples
     unique_film_tuple_list = list(itertools.product(*film_tuple_list))
@@ -292,28 +427,61 @@ Film Name: {film[0]}
 Film Screening: {film[1].__str__()}\
                 ''')
 
+
+''' 
+Sorts the list of combinations by the start time of each screening. The purpose
+of this is to implement the greedy algorithm which is used to remove overlapping
+films.
+'''
 def sort_list_by_start_time(unique_film_tuple_list: \
     List[tuple[tuple[str, Screening]]]) -> List[List[tuple[str, Screening]]]:
     '''
-    Sort the combination of films in the list of film tuples by the
-    start time of the screenings.
+    Sorts the list of combinations by the start time of each screening.
+
+        Parameters:
+            unique_film_tuple_list (List[tuple[tuple[str, Screening]]]): The 
+            list of combinations which is the result of performing a cartesian
+            product.
+        
+        Returns:
+            sorted_unique_film_tuple_list (List[List[tuple[str, Screening]]]):
+            The list of combination sorted by the start time of each screening.
     '''
-    sorted_unique_film_tuples = []
+    sorted_unique_film_tuple_list = []
     for combination in unique_film_tuple_list:
-        combination_list = list(combination)
-
-        # Sort by the screening start time using the lambda function
-        # The second element in the tuple is the Screening objects
+        # The cartesian product produces a tuple of tuples, but
+        # the tuple must be converted into a list to sort the tuples
+        combination_list = list(combination) 
+        # Sort the list by the start time of each screening using a lambda 
+        # function; the second element in the tuple is the Screening object
         combination_list.sort(key=lambda x: x[1].screening_time_start)
-        sorted_unique_film_tuples.append(combination_list)
-    return sorted_unique_film_tuples
+        sorted_unique_film_tuple_list.append(combination_list)
+    return sorted_unique_film_tuple_list
 
+
+'''
+Returns all combinations of films the user can watch the films that they have
+chosen; this is done using a greedy algorithm. The only combinations that are 
+returned are the ones that include the maximum possible amount of films a user
+can see. In other words, if the user wants to see five films, but they can at 
+maximum see four of the films (due to the presence of an overlap), only the
+combinations with four films will be presented to the user
+'''
 def get_optimal_watchlist(combination_list: \
     List[List[tuple[str, Screening]]]) \
     -> List[List[tuple[str, Screening]]]:
     '''
-    Return all combinations of films where none of the films in each
-    combination are overlapping.
+    Returns all combinations of films the user can watch the films that they
+    have chosen without any films overlapping.
+
+        Parameters:
+            combination_list (List[List[tuple[str, Screening]]]): The list of 
+            combinations sorted by the start time of each screening. 
+        
+        Returns:
+            optimal_schedule_list (List[List[tuple[str, Screening]]]): The list of
+            combinations such that each combination does not have any 
+            overlapping films.
     '''
     for comb in combination_list:
         # Start at the first tuple in the combination list
@@ -340,18 +508,23 @@ def get_optimal_watchlist(combination_list: \
     try:
         max_len = len(max(combination_list,
                         key=len))
-        optimal_watchlist = [comb for comb in \
+        optimal_schedule_list = [comb for comb in \
             combination_list if len(comb) == max_len]
     except ValueError:
-        optimal_watchlist = []
-    return optimal_watchlist
+        optimal_schedule_list = []
+    return optimal_schedule_list
 
-
+'''
+The main function.
+'''
 def main() -> None:
+    '''
+    Calls all the methods
+    '''
     file_name = 'film_objects.dat'
     film_objects_file_exists = os.path.exists(file_name)
     if not film_objects_file_exists:
-        film_dict = generate_film_dict(file_name=file_name)
+        film_dict = generate_film_dict('https://windsorfilmfestival.com/')
         save_film_dict(film_dict=film_dict,
                        dst_file_name=file_name)
     else:
